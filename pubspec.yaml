@@ -52,6 +52,7 @@ dependencies:
   responsive_builder: ^0.7.0
   ionicons: ^0.2.2
   animated_segmented_tab_control: ^1.2.0
+  flutter_web3: ^2.1.9
 dev_dependencies:
   flutter_test:
     sdk: flutter
