@@ -7,6 +7,8 @@ import 'package:fpg/presentation/utils/fpg_padding.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
+import '../../providers/home/fpg_home_provider.dart';
+import '../../view_models/home/fpg_home_viewmodel.dart';
 import '../utils/size_config.dart';
 import '../widgets/buttons/fpg_button_circle.dart';
 import '../widgets/cards/fpg_card.dart';
@@ -17,6 +19,7 @@ class FPGHomeView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    FPGHomeViewModel fpgHome = ref.watch(fpgHomeProvider);
     SizeConfig().init(context);
     return ContainerWithPadding(
         padding: FPGPaddings.mainHorizontalPadding,
@@ -40,21 +43,21 @@ class FPGHomeView extends ConsumerWidget {
                             bottom: SizeConfig.safeBlockVertical * 3, top: SizeConfig.safeBlockVertical * 2),
                         child: Icon(
                           Ionicons.footsteps,
-                          size: SizeConfig.safeBlockVertical * 15,
+                          size: SizeConfig.safeBlockVertical * 10,
                           color: FPGAppColors.primaryColor,
                         ),
                       ),
                       Padding(
                         padding: EdgeInsets.only(bottom: SizeConfig.safeBlockHorizontal * 2),
                         child: Text(
-                          "Challenge steps",
+                          "Public Good Name",
                           style: TextStyle(color: FPGAppColors.primaryColor, fontSize: SizeConfig.textScaleFactor * 15),
                         ),
                       ),
                       Padding(
                         padding: EdgeInsets.only(bottom: SizeConfig.safeBlockHorizontal * 2),
                         child: Text(
-                          "${Random().nextInt(500)}/${Random().nextInt(1000)}",
+                          "${Random().nextInt(500)}/${Random().nextInt(1000)} steps completed",
                           style: TextStyle(color: FPGAppColors.primaryColor, fontSize: SizeConfig.textScaleFactor * 15),
                         ),
                       ),
@@ -69,24 +72,6 @@ class FPGHomeView extends ConsumerWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: SizeConfig.safeBlockHorizontal * 1),
-                    child: FPGButtonCircle(
-                      onTap: () {},
-                      color: FPGAppColors.transparent,
-                      widget: Icon(
-                        Icons.run_circle,
-                        size: SizeConfig.safeBlockVertical * 5,
-                        color: FPGAppColors.primaryColor,
-                      ),
-                      splashColor: FPGAppColors.goldenYellow.withOpacity(0.2),
-                      width: SizeConfig.safeBlockHorizontal * 20,
-                      height: SizeConfig.safeBlockVertical * 4,
-                      fontColor: FPGAppColors.primaryColor,
-                      title: "Steps",
-                      fontSize: SizeConfig.textScaleFactor * 15,
-                    ),
-                  ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: SizeConfig.safeBlockHorizontal * 1),
                     child: FPGButtonCircle(
@@ -111,7 +96,7 @@ class FPGHomeView extends ConsumerWidget {
                       onTap: () {},
                       color: FPGAppColors.transparent,
                       widget: Icon(
-                        Icons.lock_clock_outlined,
+                        Icons.support,
                         size: SizeConfig.safeBlockVertical * 5,
                         color: FPGAppColors.primaryColor,
                       ),
@@ -119,10 +104,28 @@ class FPGHomeView extends ConsumerWidget {
                       width: SizeConfig.safeBlockHorizontal * 20,
                       height: SizeConfig.safeBlockVertical * 4,
                       fontColor: FPGAppColors.primaryColor,
-                      title: "Challenges",
+                      title: "Projects",
                       fontSize: SizeConfig.textScaleFactor * 15,
                     ),
-                  )
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: SizeConfig.safeBlockHorizontal * 1),
+                    child: FPGButtonCircle(
+                      onTap: () {},
+                      color: FPGAppColors.transparent,
+                      widget: Icon(
+                        Icons.run_circle,
+                        size: SizeConfig.safeBlockVertical * 5,
+                        color: FPGAppColors.primaryColor,
+                      ),
+                      splashColor: FPGAppColors.goldenYellow.withOpacity(0.2),
+                      width: SizeConfig.safeBlockHorizontal * 20,
+                      height: SizeConfig.safeBlockVertical * 4,
+                      fontColor: FPGAppColors.primaryColor,
+                      title: "Past Steps",
+                      fontSize: SizeConfig.textScaleFactor * 15,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -141,8 +144,8 @@ class FPGHomeView extends ConsumerWidget {
                           textColor: FPGAppColors.primaryColor,
                           cardOpacityColor: FPGAppColors.white.withOpacity(0.5),
                           borderColor: FPGAppColors.goldenYellow.withOpacity(0.5),
-                          textUpper: "Gitcoin Project ${index}",
-                          steps: Random().nextInt(500),
+                          textUpper: "Gitcoin Project $index",
+                          steps: fpgHome.fpgHome.steps,
                           completed: Random().nextBool(),
                           splashColor: FPGAppColors.goldenYellow,
                         ),

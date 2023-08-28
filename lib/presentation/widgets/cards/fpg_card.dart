@@ -18,7 +18,7 @@ class FPGCard extends StatelessWidget {
   });
   final Color cardOpacityColor, borderColor, textColor, splashColor;
   final String textUpper;
-  final int steps;
+  final String steps;
   final bool completed;
   final void Function()? onTap;
   @override
