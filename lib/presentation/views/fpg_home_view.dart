@@ -3,7 +3,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpg/presentation/utils/fpg_app_colors.dart';
+import 'package:fpg/presentation/utils/fpg_navigation_service.dart';
 import 'package:fpg/presentation/utils/fpg_padding.dart';
+import 'package:fpg/presentation/utils/fpg_routes.dart';
+import 'package:fpg/view_models/home/fpg_home_viewmodel_impl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
@@ -19,8 +22,15 @@ class FPGHomeView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    FPGHomeViewModel fpgHome = ref.watch(fpgHomeProvider);
+    AsyncValue<FPGHomeViewModel> fpgHomeAsyncValue = ref.watch(fpgHomeProvider);
     SizeConfig().init(context);
+    return fpgHomeAsyncValue.when(
+        data: (FPGHomeViewModel data) => _buildFPGHomeView(context, data, false),
+        error: (Object error, StackTrace stack) => _buildFPGHomeView(context, FPGHomeViewModelImpl(), false),
+        loading: () => _buildFPGHomeView(context, FPGHomeViewModelImpl(), true));
+  }
+
+  Widget _buildFPGHomeView(BuildContext context, FPGHomeViewModel fpgHomeViewModel, bool isLoading) {
     return ContainerWithPadding(
         padding: FPGPaddings.mainHorizontalPadding,
         color: FPGAppColors.transparent,
@@ -68,6 +78,13 @@ class FPGHomeView extends ConsumerWidget {
               ),
             ),
             Padding(
+              padding: EdgeInsets.only(bottom: SizeConfig.safeBlockHorizontal * 2),
+              child: Text(
+                "${Random().nextInt(5000)} XF Available",
+                style: TextStyle(color: FPGAppColors.primaryColor, fontSize: SizeConfig.textScaleFactor * 20),
+              ),
+            ),
+            Padding(
               padding: EdgeInsets.only(bottom: SizeConfig.safeBlockVertical * 5),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -75,25 +92,9 @@ class FPGHomeView extends ConsumerWidget {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: SizeConfig.safeBlockHorizontal * 1),
                     child: FPGButtonCircle(
-                      onTap: () {},
-                      color: FPGAppColors.transparent,
-                      widget: Icon(
-                        Icons.currency_bitcoin_outlined,
-                        size: SizeConfig.safeBlockVertical * 5,
-                        color: FPGAppColors.primaryColor,
-                      ),
-                      splashColor: FPGAppColors.goldenYellow.withOpacity(0.2),
-                      width: SizeConfig.safeBlockHorizontal * 20,
-                      height: SizeConfig.safeBlockVertical * 4,
-                      fontColor: FPGAppColors.primaryColor,
-                      title: "My Coins",
-                      fontSize: SizeConfig.textScaleFactor * 15,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: SizeConfig.safeBlockHorizontal * 1),
-                    child: FPGButtonCircle(
-                      onTap: () {},
+                      onTap: () {
+                        FPGNavigationService.navigateTo(FPGRoutes.publicGoodsRoute);
+                      },
                       color: FPGAppColors.transparent,
                       widget: Icon(
                         Icons.support,
@@ -111,7 +112,9 @@ class FPGHomeView extends ConsumerWidget {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: SizeConfig.safeBlockHorizontal * 1),
                     child: FPGButtonCircle(
-                      onTap: () {},
+                      onTap: () {
+                        FPGNavigationService.navigateTo(FPGRoutes.pasteStepsRoute);
+                      },
                       color: FPGAppColors.transparent,
                       widget: Icon(
                         Icons.run_circle,
@@ -134,23 +137,38 @@ class FPGHomeView extends ConsumerWidget {
               child: SizedBox(
                 width: SizeConfig.safeBlockHorizontal * 100,
                 height: SizeConfig.safeBlockHorizontal * 100,
-                child: ListView.builder(
-                    itemCount: 10,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Padding(
-                        padding: EdgeInsets.only(top: SizeConfig.safeBlockVertical * 1),
-                        child: FPGCard(
-                          onTap: () {},
-                          textColor: FPGAppColors.primaryColor,
-                          cardOpacityColor: FPGAppColors.white.withOpacity(0.5),
-                          borderColor: FPGAppColors.goldenYellow.withOpacity(0.5),
-                          textUpper: "Gitcoin Project $index",
-                          steps: fpgHome.fpgHome.steps,
-                          completed: Random().nextBool(),
-                          splashColor: FPGAppColors.goldenYellow,
+                child: isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          color: FPGAppColors.primaryColor,
                         ),
-                      );
-                    }),
+                      )
+                    : fpgHomeViewModel.fpgHome.publicGoods.isEmpty
+                        ? Center(
+                            child: Text(
+                              "No Public Goods found",
+                              style: TextStyle(
+                                  color: FPGAppColors.primaryColor, fontSize: SizeConfig.textScaleFactor * 15),
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: fpgHomeViewModel.fpgHome.publicGoods.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Padding(
+                                padding: EdgeInsets.only(top: SizeConfig.safeBlockVertical * 1),
+                                child: FPGCard(
+                                  onTap: () {},
+                                  textColor: FPGAppColors.primaryColor,
+                                  cardOpacityColor: FPGAppColors.white.withOpacity(0.5),
+                                  borderColor: FPGAppColors.goldenYellow.withOpacity(0.5),
+                                  textUpper: "Gitcoin Project $index",
+                                  steps: fpgHomeViewModel.fpgHome.steps,
+                                  completed: Random().nextBool(),
+                                  splashColor: FPGAppColors.goldenYellow,
+                                  onPressed: () {},
+                                ),
+                              );
+                            }),
               ),
             )
           ],

@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveApp(builder: (context) {
       return MaterialApp(
+        debugShowCheckedModeBanner: false,
         initialRoute: FPGRoutes.homeRoute,
         routes: FPGNavigationService.routes,
         builder: (BuildContext context, Widget? widget) {

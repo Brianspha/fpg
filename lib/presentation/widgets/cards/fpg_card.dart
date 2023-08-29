@@ -5,22 +5,23 @@ import '../../utils/fpg_app_colors.dart';
 import '../../utils/size_config.dart';
 
 class FPGCard extends StatelessWidget {
-  const FPGCard({
-    super.key,
-    required this.cardOpacityColor,
-    required this.borderColor,
-    required this.textUpper,
-    required this.steps,
-    required this.completed,
-    required this.textColor,
-    required this.splashColor,
-    required this.onTap,
-  });
+  const FPGCard(
+      {super.key,
+      required this.cardOpacityColor,
+      required this.borderColor,
+      required this.textUpper,
+      required this.steps,
+      required this.completed,
+      required this.textColor,
+      required this.splashColor,
+      required this.onTap,
+      required this.onPressed});
   final Color cardOpacityColor, borderColor, textColor, splashColor;
   final String textUpper;
   final String steps;
   final bool completed;
-  final void Function()? onTap;
+  final void Function()? onTap, onPressed;
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -50,15 +51,23 @@ class FPGCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(
-                        right: SizeConfig.safeBlockHorizontal * 60, left: SizeConfig.safeBlockHorizontal * 2),
+                    padding: EdgeInsets.only(left: SizeConfig.safeBlockHorizontal * 2),
                     child:
                         Text(textUpper, style: TextStyle(color: textColor, fontSize: SizeConfig.textScaleFactor * 15)),
                   ),
-                  Icon(
-                    completed ? Ionicons.checkmark_circle_outline : Ionicons.warning_outline,
-                    color: completed ? FPGAppColors.green : FPGAppColors.red,
-                  )
+                  Expanded(
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(right: SizeConfig.safeBlockHorizontal * 3),
+                        child: Icon(
+                          completed ? Ionicons.checkmark_circle_outline : Ionicons.warning_outline,
+                          color: completed ? FPGAppColors.green : FPGAppColors.red,
+                        ),
+                      )
+                    ],
+                  ))
                 ],
               ),
               Row(
@@ -69,7 +78,20 @@ class FPGCard extends StatelessWidget {
                         top: SizeConfig.safeBlockVertical * 2, left: SizeConfig.safeBlockHorizontal * 2),
                     child: Text("$steps steps",
                         style: TextStyle(color: textColor, fontSize: SizeConfig.textScaleFactor * 15)),
-                  )
+                  ),
+                  if (!completed)
+                    Expanded(
+                        child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                            onPressed: onPressed,
+                            icon: Icon(
+                              Icons.cancel,
+                              color: FPGAppColors.red,
+                            ))
+                      ],
+                    ))
                 ],
               )
             ],

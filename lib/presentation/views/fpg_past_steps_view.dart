@@ -1,30 +1,30 @@
 import 'package:animation_list/animation_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fpg/models/home/public_good.dart';
 import 'package:fpg/presentation/utils/fpg_app_colors.dart';
 import 'package:fpg/presentation/utils/fpg_padding.dart';
-import 'package:fpg/providers/projects/fpg_public_goods_provider.dart';
 
+import '../../models/home/steps.dart';
+import '../../providers/steps/fgp_past_steps_provider.dart';
 import '../utils/size_config.dart';
 import '../widgets/cards/fpg_public_goods.dart';
 import '../widgets/containers/base_container.dart';
 
-class FPGPublicGoodsView extends ConsumerWidget {
-  const FPGPublicGoodsView({super.key});
+class FPGPastStepsView extends ConsumerWidget {
+  const FPGPastStepsView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    AsyncValue<List<PublicGood>> publicGoodsModelAsync = ref.watch(publicGoodsProvider);
+    AsyncValue<List<Steps>> publicGoodsModelAsync = ref.watch(stepHistoryProvider);
     SizeConfig().init(context);
     return publicGoodsModelAsync.when(
-        data: (List<PublicGood> data) => _buildProjectsView(context, data),
-        error: (Object error, StackTrace stack) => _buildProjectsView(context, []),
-        loading: () => _buildProjectsView(context, []));
+        data: (List<Steps> data) => _buildPastHistoryView(context, data, false),
+        error: (Object error, StackTrace stack) => _buildPastHistoryView(context, [], false),
+        loading: () => _buildPastHistoryView(context, [], true));
   }
 }
 
-Widget _buildProjectsView(BuildContext context, List<PublicGood> publicGoods) {
+Widget _buildPastHistoryView(BuildContext context, List<Steps> steps, bool isLoading) {
   return ContainerWithPadding(
     allowBackPress: true,
     padding: FPGPaddings.mainHorizontalPadding,
@@ -36,38 +36,46 @@ Widget _buildProjectsView(BuildContext context, List<PublicGood> publicGoods) {
             padding: EdgeInsets.only(top: SizeConfig.safeBlockVertical * 5, bottom: SizeConfig.safeBlockVertical * 5),
             child: Align(
               alignment: FractionalOffset.topLeft,
-              child: Text("Public Goods,",
+              child: Text("Step History,",
                   style: TextStyle(color: FPGAppColors.primaryColor, fontSize: SizeConfig.textScaleFactor * 20)),
             ),
           ),
           SizedBox(
             width: SizeConfig.blockSizeHorizontal * 100,
             height: SizeConfig.safeBlockVertical * 70,
-            child: publicGoods.isEmpty
+            child: isLoading
                 ? Center(
-                    child: Text(
-                      "No Public Goods found",
-                      style: TextStyle(color: FPGAppColors.primaryColor, fontSize: SizeConfig.textScaleFactor * 15),
+                    child: CircularProgressIndicator(
+                      color: FPGAppColors.primaryColor,
                     ),
                   )
-                : AnimationList(
-                    duration: 1000,
-                    reBounceDepth: 10.0,
-                    children: [
-                      for (int index = 0; index < publicGoods.length; index++)
-                        Padding(
-                          padding: EdgeInsets.only(top: SizeConfig.safeBlockVertical * 1),
-                          child: FPGPublicGoods(
-                            textColor: FPGAppColors.primaryColor,
-                            cardOpacityColor: FPGAppColors.white.withOpacity(0.5),
-                            borderColor: FPGAppColors.goldenYellow.withOpacity(0.5),
-                            textUpper: "Gitcoin Project $index",
-                            fundsRaised: "${index.toString()} XF Raised",
-                            splashColor: FPGAppColors.goldenYellow,
-                          ),
-                        )
-                    ],
-                  ),
+                : steps.isEmpty
+                    ? Center(
+                        child: Text(
+                          "No Step History found",
+                          style: TextStyle(color: FPGAppColors.primaryColor, fontSize: SizeConfig.textScaleFactor * 15),
+                        ),
+                      )
+                    : AnimationList(
+                        duration: 1000,
+                        reBounceDepth: 10.0,
+                        children: [
+                          for (int index = 0; index < steps.length; index++)
+                            Padding(
+                              padding: EdgeInsets.only(top: SizeConfig.safeBlockVertical * 1),
+                              child: FPGPublicGoods(
+                                textColor: FPGAppColors.primaryColor,
+                                cardOpacityColor: FPGAppColors.white.withOpacity(0.5),
+                                borderColor: FPGAppColors.goldenYellow.withOpacity(0.5),
+                                textUpper: steps[index].projectName,
+                                fundsRaised: "${steps[index].tokensReceived} XF received",
+                                splashColor: FPGAppColors.goldenYellow,
+                                onTap: () {},
+                                isSupporting: false,
+                              ),
+                            )
+                        ],
+                      ),
           ),
           Padding(
             padding: EdgeInsets.only(top: SizeConfig.safeBlockVertical * 5),

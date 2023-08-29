@@ -1,26 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:fpg/presentation/utils/fpg_app_colors.dart';
 
-import '../../utils/fpg_app_colors.dart';
 import '../../utils/size_config.dart';
 
-class FPGCard extends StatelessWidget {
-  const FPGCard(
+class FPGPublicGoods extends StatelessWidget {
+  const FPGPublicGoods(
       {super.key,
+      this.onSupport,
+      required this.onTap,
       required this.cardOpacityColor,
       required this.borderColor,
       required this.textUpper,
-      required this.steps,
-      required this.completed,
       required this.textColor,
       required this.splashColor,
-      required this.onTap,
-      required this.onPressed});
+      required this.isSupporting,
+      required this.fundsRaised});
   final Color cardOpacityColor, borderColor, textColor, splashColor;
   final String textUpper;
-  final String steps;
-  final bool completed;
-  final void Function()? onTap, onPressed;
+  final String fundsRaised;
+  final void Function()? onTap, onSupport;
+  final bool isSupporting;
 
   @override
   Widget build(BuildContext context) {
@@ -55,19 +54,6 @@ class FPGCard extends StatelessWidget {
                     child:
                         Text(textUpper, style: TextStyle(color: textColor, fontSize: SizeConfig.textScaleFactor * 15)),
                   ),
-                  Expanded(
-                      child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(right: SizeConfig.safeBlockHorizontal * 3),
-                        child: Icon(
-                          completed ? Ionicons.checkmark_circle_outline : Ionicons.warning_outline,
-                          color: completed ? FPGAppColors.green : FPGAppColors.red,
-                        ),
-                      )
-                    ],
-                  ))
                 ],
               ),
               Row(
@@ -76,20 +62,29 @@ class FPGCard extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(
                         top: SizeConfig.safeBlockVertical * 2, left: SizeConfig.safeBlockHorizontal * 2),
-                    child: Text("$steps steps",
+                    child: Text(fundsRaised,
                         style: TextStyle(color: textColor, fontSize: SizeConfig.textScaleFactor * 15)),
                   ),
-                  if (!completed)
+                  if (!isSupporting)
                     Expanded(
                         child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        IconButton(
-                            onPressed: onPressed,
-                            icon: Icon(
-                              Icons.cancel,
-                              color: FPGAppColors.red,
-                            ))
+                        Padding(
+                          padding: EdgeInsets.only(right: SizeConfig.safeBlockHorizontal * 2),
+                          child: ElevatedButton(
+                              style: TextButton.styleFrom(
+                                  backgroundColor: FPGAppColors.white.withOpacity(0.1),
+                                  side: BorderSide(
+                                    color: FPGAppColors.goldenYellow,
+                                    width: SizeConfig.safeBlockHorizontal * 0.1,
+                                  ),
+                                  shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(Radius.elliptical(30, 120)))),
+                              onPressed: onSupport,
+                              child: Text("Support",
+                                  style: TextStyle(color: textColor, fontSize: SizeConfig.textScaleFactor * 10))),
+                        )
                       ],
                     ))
                 ],
